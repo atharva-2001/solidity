@@ -120,7 +120,15 @@ public:
 		ParserError,
 		TypeError,
 		SyntaxError,
-		Warning
+		Warning,
+		Info
+	};
+
+	enum class Category
+	{
+		Error,
+		Warning,
+		Info
 	};
 
 	Error(
@@ -139,21 +147,71 @@ public:
 	static Error const* containsErrorOfType(ErrorList const& _list, Error::Type _type)
 	{
 		for (auto e: _list)
-		{
 			if (e->type() == _type)
 				return e.get();
-		}
 		return nullptr;
 	}
-	static bool containsOnlyWarnings(ErrorList const& _list)
+
+	static Category errorCategory(Type _type)
+	{
+		if (_type == Type::Info)
+			return Category::Info;
+		if (_type == Type::Warning)
+			return Category::Warning;
+		return Category::Error;
+	}
+
+	static bool isError(Category _cat)
+	{
+		return _cat == Category::Error;
+	}
+
+	static bool isError(Type _type)
+	{
+		return isError(errorCategory(_type));
+	}
+
+	static bool containsErrors(ErrorList const& _list)
 	{
 		for (auto e: _list)
-		{
-			if (e->type() != Type::Warning)
-				return false;
-		}
-		return true;
+			if (isError(e->type()))
+				return true;
+		return false;
 	}
+
+	static std::string formatErrorCategory(Category _cat)
+	{
+		if (_cat == Category::Info)
+			return "Info";
+		if (_cat == Category::Warning)
+			return "Warning";
+		solAssert(isError(_cat), "");
+		return "Error";
+	}
+
+	static std::string formatErrorCategoryLowercase(Category _cat)
+	{
+		if (_cat == Category::Info)
+			return "info";
+		if (_cat == Category::Warning)
+			return "warning";
+		solAssert(isError(_cat), "");
+		return "error";
+	}
+
+	static Category str2Category(std::string const& _cat)
+	{
+		std::map<std::string, Category> cats{
+			{"info", Category::Info},
+			{"Info", Category::Info},
+			{"warning", Category::Warning},
+			{"Warning", Category::Warning},
+			{"error", Category::Error},
+			{"Error", Category::Error}
+		};
+		return cats.at(_cat);
+	}
+
 private:
 	ErrorId m_errorId;
 	Type m_type;

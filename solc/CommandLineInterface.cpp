@@ -997,7 +997,7 @@ bool CommandLineInterface::assemble(
 			m_hasOutput = true;
 			formatter.printErrorInformation(*error);
 		}
-		if (!Error::containsOnlyWarnings(stack.errors()))
+		if (Error::containsErrors(stack.errors()))
 			successful = false;
 	}
 

@@ -52,7 +52,7 @@ SourceReferenceExtractor::Message SourceReferenceExtractor::extract(
 	Error const& _error
 )
 {
-	string category = (_error.type() == Error::Type::Warning) ? "Warning" : "Error";
+	string category = Error::formatErrorCategory(Error::errorCategory(_error.type()));
 	Message message = extract(_charStreamProvider, _error, category);
 	message.errorId = _error.errorId();
 	return message;
