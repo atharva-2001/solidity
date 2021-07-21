@@ -15,6 +15,7 @@ Compiler Features:
 
 
 Bugfixes:
+ * Commandline Interface: Fix resolution of paths whitelisted with ``--allowed-paths`` or implicitly due to base path, remappings and files being compiled. Correctly handle paths that do not match imports exactly due to being relative, non-normalized or empty.
  * Name Resolver: Fix that when importing an aliased symbol using ``import {AliasedName} from "a.sol"`` it would use the original name of the symbol and not the aliased one.
  * SMTChecker: Fix false negative caused by ``push`` on storage array references returned by internal functions.
  * SMTChecker: Fix false positive in external calls from constructors.
