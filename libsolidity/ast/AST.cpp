@@ -335,6 +335,12 @@ TypeNameAnnotation& TypeName::annotation() const
 	return initAnnotation<TypeNameAnnotation>();
 }
 
+Type const* UserDefinedValueTypeDefinition::type() const
+{
+	solAssert(m_typeName->annotation().type, "");
+	return TypeProvider::typeType(TypeProvider::userDefinedValueType(*m_typeName->annotation().type, *this));
+}
+
 Type const* StructDefinition::type() const
 {
 	solAssert(annotation().recursive.has_value(), "Requested struct type before DeclarationTypeChecker.");
