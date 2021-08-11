@@ -28,6 +28,7 @@
 #include <libsolidity/interface/DebugSettings.h>
 #include <libsolidity/interface/FileReader.h>
 #include <libyul/AssemblyStack.h>
+#include <libevmasm/Assembly.h>
 
 #include <iostream>
 #include <memory>
@@ -82,6 +83,8 @@ private:
 		std::optional<std::string> _yulOptimiserSteps = std::nullopt
 	);
 
+	bool assembleFromAssemblyJson();
+
 	void outputCompilationResults();
 
 	void handleCombinedJSON();
@@ -131,6 +134,8 @@ private:
 	FileReader m_fileReader;
 	std::optional<std::string> m_standardJsonInput;
 	std::unique_ptr<frontend::CompilerStack> m_compiler;
+	std::unique_ptr<evmasm::Assembly> m_assembly;
+	std::unique_ptr<evmasm::LinkerObject> m_linkerObject;
 	CommandLineOptions m_options;
 };
 

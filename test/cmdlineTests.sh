@@ -529,6 +529,18 @@ SOLTMPDIR=$(mktemp -d)
 )
 rm -rf "$SOLTMPDIR"
 
+printTask "Testing ASM-JSON import..."
+SOLTMPDIR=$(mktemp -d)
+(
+    cd "$SOLTMPDIR"
+    if ! "$REPO_ROOT/scripts/AsmJsonImportTest.sh"
+    then
+        rm -rf "$SOLTMPDIR"
+        exit 1
+    fi
+)
+rm -rf "$SOLTMPDIR"
+
 printTask "Testing AST export with stop-after=parsing..."
 "$REPO_ROOT/test/stopAfterParseTests.sh"
 

@@ -12,6 +12,7 @@ Compiler Features:
  * SMTChecker: Add constraints to better correlate ``address(this).balance`` and ``msg.value``.
  * SMTChecker: Support the ``value`` option for external function calls.
  * Commandline Interface: Disallowed the ``--experimental-via-ir`` option to be used with Standard Json, Assembler and Linker modes.
+ * Commandline Interface: Adds alternative input mode ``--import-asm-json`` to import assembly json.
 
 
 Bugfixes:

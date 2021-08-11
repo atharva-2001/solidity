@@ -73,6 +73,7 @@ static string const g_strGeneratedSourcesRuntime = "generated-sources-runtime";
 static string const g_strGas = "gas";
 static string const g_strHelp = "help";
 static string const g_strImportAst = "import-ast";
+static string const g_strImportAssemblyJson = "import-asm-json";
 static string const g_strInputFile = "input-file";
 static string const g_strInterface = "interface";
 static string const g_strYul = "yul";
@@ -580,6 +581,11 @@ General Information)").c_str(),
 			"Supported Inputs is the output of the --" + g_strStandardJSON + " or the one produced by "
 			"--" + g_strCombinedJson + " " + g_strAst + "," + g_strCompactJSON).c_str()
 		)
+		(
+			g_strImportAssemblyJson.c_str(),
+			("Import assembly to be used, assumes input holds assembly in JSON format. "
+			"Supported Input is the output of the --" + g_strAsmJson + ".").c_str()
+		)
 	;
 	desc.add(alternativeInputModes);
 
@@ -924,6 +930,8 @@ General Information)").c_str(),
 		m_options.input.mode = InputMode::Linker;
 	else if (m_args.count(g_strImportAst) > 0)
 		m_options.input.mode = InputMode::CompilerWithASTImport;
+	else if (m_args.count(g_strImportAssemblyJson) > 0)
+		m_options.input.mode = InputMode::ImportAssemblyJson;
 	else
 		m_options.input.mode = InputMode::Compiler;
 
@@ -1197,7 +1205,7 @@ General Information)").c_str(),
 	if (m_options.input.mode == InputMode::Compiler)
 		m_options.input.errorRecovery = (m_args.count(g_strErrorRecovery) > 0);
 
-	solAssert(m_options.input.mode == InputMode::Compiler || m_options.input.mode == InputMode::CompilerWithASTImport, "");
+	solAssert(m_options.input.mode == InputMode::ImportAssemblyJson || m_options.input.mode == InputMode::Compiler || m_options.input.mode == InputMode::CompilerWithASTImport, "");
 	return true;
 }
 

@@ -28,6 +28,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <optional>
 
 namespace solidity::langutil
 {
@@ -102,6 +103,7 @@ struct SourceLocation
 	int start = -1;
 	int end = -1;
 	std::shared_ptr<std::string const> sourceName;
+	std::optional<int> sourceIndex = std::nullopt;
 };
 
 SourceLocation parseSourceLocation(
