@@ -410,6 +410,8 @@ BoolResult AddressType::isExplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	if ((_convertTo.category() == category()) || isImplicitlyConvertibleTo(_convertTo))
 		return true;
+	else if (UserDefinedValueType::convertTo(_convertTo, *this))
+		return true;
 	else if (auto const* contractType = dynamic_cast<ContractType const*>(&_convertTo))
 		return (m_stateMutability >= StateMutability::Payable) || !contractType->isPayable();
 	else if (m_stateMutability == StateMutability::NonPayable)
@@ -541,6 +543,8 @@ BoolResult IntegerType::isImplicitlyConvertibleTo(Type const& _convertTo) const
 BoolResult IntegerType::isExplicitlyConvertibleTo(Type const& _convertTo) const
 {
 	if (isImplicitlyConvertibleTo(_convertTo))
+		return true;
+	else if (UserDefinedValueType::convertTo(_convertTo, *this))
 		return true;
 	else if (auto integerType = dynamic_cast<IntegerType const*>(&_convertTo))
 		return (numBits() == integerType->numBits()) || (isSigned() == integerType->isSigned());
@@ -952,8 +956,9 @@ BoolResult RationalNumberType::isExplicitlyConvertibleTo(Type const& _convertTo)
 {
 	if (isImplicitlyConvertibleTo(_convertTo))
 		return true;
-
 	auto category = _convertTo.category();
+	if (category == Category::UserDefinedValueType)
+		return isImplicitlyConvertibleTo(dynamic_cast<UserDefinedValueType const&>(_convertTo).underlyingType());
 	if (category == Category::FixedBytes)
 		return false;
 	else if (auto addressType = dynamic_cast<AddressType const*>(&_convertTo))
@@ -1270,6 +1275,8 @@ BoolResult FixedBytesType::isExplicitlyConvertibleTo(Type const& _convertTo) con
 {
 	if (_convertTo.category() == category())
 		return true;
+	else if (UserDefinedValueType::convertTo(_convertTo, *this))
+		return true;
 	else if (auto integerType = dynamic_cast<IntegerType const*>(&_convertTo))
 		return (!integerType->isSigned() && integerType->numBits() == numBytes() * 8);
 	else if (auto addressType = dynamic_cast<AddressType const*>(&_convertTo))
@@ -1330,6 +1337,11 @@ bool FixedBytesType::operator==(Type const& _other) const
 		return false;
 	FixedBytesType const& other = dynamic_cast<FixedBytesType const&>(_other);
 	return other.m_bytes == m_bytes;
+}
+
+BoolResult BoolType::isExplicitlyConvertibleTo(Type const& _convertTo) const
+{
+	return isImplicitlyConvertibleTo(_convertTo) || UserDefinedValueType::convertTo(_convertTo, *this);
 }
 
 u256 BoolType::literalValue(Literal const* _literal) const
@@ -2531,6 +2543,46 @@ unsigned EnumType::memberValue(ASTString const& _member) const
 		++index;
 	}
 	solAssert(false, "Requested unknown enum value " + _member);
+}
+
+string UserDefinedValueType::richIdentifier() const
+{
+	return "t_userDefinedValueType" + parenthesizeIdentifier(m_userDefinedValueTypeDefinition.name()) + to_string(m_userDefinedValueTypeDefinition.id());
+}
+
+bool UserDefinedValueType::operator==(Type const& _other) const
+{
+	if (_other.category() != category())
+		return false;
+	UserDefinedValueType const& other = dynamic_cast<UserDefinedValueType const&>(_other);
+	return other.definition() == definition();
+}
+
+std::string UserDefinedValueType::toString(bool /* _short */) const
+{
+	return "user defined type " + definition().name();
+}
+
+BoolResult UserDefinedValueType::isExplicitlyConvertibleTo(Type const& _convertTo) const
+{
+	if (isImplicitlyConvertibleTo(_convertTo))
+		return true;
+	return _convertTo == m_underlyingType;
+}
+
+bool UserDefinedValueType::convertTo(Type const& _userDefined, Type const& _valueType)
+{
+	if (!dynamic_cast<UserDefinedValueType const*>(&_userDefined))
+		return false;
+	solAssert(_valueType.isValueType(), "");
+	// Except for RationalNumberType, a `valueType -> userDefined` explicit conversion has the same
+	// rule as `userDefined -> valueType`.
+	return _userDefined.isExplicitlyConvertibleTo(_valueType);
+}
+
+std::vector<std::tuple<std::string, Type const*>> UserDefinedValueType::makeStackItems() const
+{
+	return m_underlyingType.stackItems();
 }
 
 BoolResult TupleType::isImplicitlyConvertibleTo(Type const& _other) const
