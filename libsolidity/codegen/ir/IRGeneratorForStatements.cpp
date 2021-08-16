@@ -2314,6 +2314,10 @@ void IRGeneratorForStatements::endVisit(Identifier const& _identifier)
 	{
 		// no-op
 	}
+	else if (dynamic_cast<UserDefinedValueTypeDefinition const*>(declaration))
+	{
+		// no-op
+	}
 	else
 	{
 		solAssert(false, "Identifier type not expected in expression context.");
