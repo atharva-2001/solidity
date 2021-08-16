@@ -140,6 +140,36 @@ bool DeclarationTypeChecker::visit(StructDefinition const& _struct)
 	return false;
 }
 
+bool DeclarationTypeChecker::visit(UserDefinedValueTypeDefinition const& _userDefined)
+{
+	TypeName const* typeName = _userDefined.typeName();
+	solAssert(typeName, "");
+	if (!dynamic_cast<ElementaryTypeName const*>(typeName))
+		m_errorReporter.fatalTypeError(
+			8657_error,
+			typeName->location(),
+			"The underlying type for a user defined value type has to be an elementary value type."
+		);
+
+	return true;
+}
+
+void DeclarationTypeChecker::endVisit(UserDefinedValueTypeDefinition const& _userDefined)
+{
+	solAssert(_userDefined.typeName(), "");
+	Type const* type = _userDefined.typeName()->annotation().type;
+	solAssert(type, "");
+	solAssert(!dynamic_cast<UserDefinedValueType const*>(type), "");
+	if (!type->isValueType())
+		m_errorReporter.typeError(
+			8129_error,
+			_userDefined.location(),
+			"The underlying type of the user defined value type \"" +
+			_userDefined.name() +
+			"\" is not a value type."
+		);
+}
+
 void DeclarationTypeChecker::endVisit(UserDefinedTypeName const& _typeName)
 {
 	if (_typeName.annotation().type)
@@ -158,6 +188,15 @@ void DeclarationTypeChecker::endVisit(UserDefinedTypeName const& _typeName)
 		_typeName.annotation().type = TypeProvider::enumType(*enumDef);
 	else if (ContractDefinition const* contract = dynamic_cast<ContractDefinition const*>(declaration))
 		_typeName.annotation().type = TypeProvider::contract(*contract);
+	else if (auto userDefinedValueType = dynamic_cast<UserDefinedValueTypeDefinition const*>(declaration))
+	{
+		TypeName const* typeName = userDefinedValueType->typeName();
+		solAssert(typeName, "");
+		Type const* underlyingType = typeName->annotation().type;
+		solAssert(underlyingType, "");
+
+		_typeName.annotation().type = TypeProvider::userDefinedValueType(*underlyingType, *userDefinedValueType);
+	}
 	else
 	{
 		_typeName.annotation().type = TypeProvider::emptyTuple();

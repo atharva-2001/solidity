@@ -60,6 +60,8 @@ private:
 	void endVisit(VariableDeclaration const& _variable) override;
 	bool visit(EnumDefinition const& _enum) override;
 	bool visit(StructDefinition const& _struct) override;
+	bool visit(UserDefinedValueTypeDefinition const& _userDefined) override;
+	void endVisit(UserDefinedValueTypeDefinition const& _userDefined) override;
 	bool visit(UsingForDirective const& _usingForDirective) override;
 	bool visit(InheritanceSpecifier const& _inheritanceSpecifier) override;
 
