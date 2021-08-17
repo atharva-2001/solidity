@@ -89,6 +89,10 @@ The following non-fixed-size types exist:
 
 - ``<type>[]``: a variable-length array of elements of the given type.
 
+For :ref:`user defined value types<user-defined-value-types>`:
+
+- ``type C is V``: equivalent to the elementary value type ``V``.
+
 Types can be combined to a tuple by enclosing them inside parentheses, separated by commas:
 
 - ``(T1,T2,...,Tn)``: tuple consisting of the types ``T1``, ..., ``Tn``, ``n >= 0``

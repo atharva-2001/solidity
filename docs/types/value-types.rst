@@ -628,6 +628,51 @@ smallest and respectively largest value of the given enum.
 .. note::
     Enums can also be declared on the file level, outside of contract or library definitions.
 
+.. index:: ! user defined value type, custom type
+
+.. _user-defined-value-types:
+
+User Defined Value Types
+------------------------
+
+A user defined value type allows creating a zero cost abstraction over an elementary value type.
+This is similar to an alias, but with stricter type requirements.
+
+A user defined value type is defined using ``type C is V`` where ``C`` is the name of the newly
+introduced type and ``V`` has to be a built-in value type. The type ``C`` does not have any
+operators or bound member functions. In particular, even the operator ``==`` is not defined. One can
+use operators or bound member functions by explicitly converting it to the underlying type.
+
+The following example illustrates a custom type ``UFixed256x18`` representing a decimal fixed point
+type with 18 decimals and a minimal library to do arithmetic operations on the type.
+
+
+.. code-block:: solidity
+
+    // SPDX-License-Identifier: GPL-3.0
+    pragma solidity ^0.8.8;
+
+    // Represent a 18 decimal, 256 bit wide fixed point type using a user defined value type.
+    type UFixed256x18 is uint256;
+
+    /// A minimal library to do fixed point operations on UFixed256x18.
+    library FixedMath {
+        /// Adds two UFixed256x18 numbers. Reverts on overflow, relying on checked
+        /// arithmetic on uint256.
+        function add(UFixed256x18 a, UFixed256x18 b) internal returns (UFixed256x18) {
+            return UFixed256x18(uint256(a) + uint256(b));
+        }
+        /// Multiplies UFixed256x18 and uint256. Reverts on overflow, relying on checked
+        /// arithmetic on uint256.
+        function mul(UFixed256x18 a, uint256 b) internal returns (UFixed256x18) {
+            return UFixed256x18(uint256(a) * b);
+        }
+        /// Truncates UFixed256x18 to the nearest uint256 number.
+        function truncate(UFixed256x18 a) internal returns (uint256) {
+            return uint256(a) / 10**18;
+        }
+    }
+
 
 .. index:: ! function type, ! type; function
 
