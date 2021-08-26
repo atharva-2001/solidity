@@ -659,16 +659,16 @@ type with 18 decimals and a minimal library to do arithmetic operations on the t
     library FixedMath {
         /// Adds two UFixed256x18 numbers. Reverts on overflow, relying on checked
         /// arithmetic on uint256.
-        function add(UFixed256x18 a, UFixed256x18 b) internal returns (UFixed256x18) {
+        function add(UFixed256x18 a, UFixed256x18 b) internal pure returns (UFixed256x18) {
             return UFixed256x18(uint256(a) + uint256(b));
         }
         /// Multiplies UFixed256x18 and uint256. Reverts on overflow, relying on checked
         /// arithmetic on uint256.
-        function mul(UFixed256x18 a, uint256 b) internal returns (UFixed256x18) {
+        function mul(UFixed256x18 a, uint256 b) internal pure returns (UFixed256x18) {
             return UFixed256x18(uint256(a) * b);
         }
         /// Truncates UFixed256x18 to the nearest uint256 number.
-        function truncate(UFixed256x18 a) internal returns (uint256) {
+        function truncate(UFixed256x18 a) internal pure returns (uint256) {
             return uint256(a) / 10**18;
         }
     }
