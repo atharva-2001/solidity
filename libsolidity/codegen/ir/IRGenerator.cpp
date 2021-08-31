@@ -169,10 +169,10 @@ string IRGenerator::generate(
 	for (VariableDeclaration const* var: ContractType(_contract).immutableVariables())
 		m_context.registerImmutableVariable(*var);
 
-	auto invertedSourceIndicies = invertMap(m_context.sourceIndices());
+	auto invertedSourceIndices = invertMap(m_context.sourceIndices());
 
 	string useSrcMap = joinHumanReadable(
-		ranges::views::transform(invertedSourceIndicies, [](auto&& _pair) {
+		ranges::views::transform(invertedSourceIndices, [](auto&& _pair) {
 			return to_string(_pair.first) + ":" + escapeAndQuoteString(_pair.second);
 		}),
 		", "
