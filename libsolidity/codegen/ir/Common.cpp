@@ -137,7 +137,8 @@ string sourceLocationComment(SourceLocation const& _location, IRGenerationContex
 	return AsmPrinter::formatSourceLocationComment(
 		_location,
 		_context.sourceIndices(),
-		true /* _statement */
+		true /* _statement */,
+		_context.soliditySourceProvider()
 	);
 }
 
