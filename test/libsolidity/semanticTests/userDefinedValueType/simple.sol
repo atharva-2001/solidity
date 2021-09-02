@@ -3,7 +3,8 @@ contract C {
     function f() external returns (MyInt a) {
     }
     function g() external returns (MyInt b) {
-        b = MyInt(int(1));
+        int x = 1;
+        assembly { b := x }
     }
 }
 // ====

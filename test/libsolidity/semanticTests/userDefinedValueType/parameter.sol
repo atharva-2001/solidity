@@ -4,10 +4,10 @@ contract C {
         b = a;
     }
     function unwrap(MyAddress a) external returns (address b) {
-        b = address(a);
+        assembly { b := a }
     }
     function wrap(address a) external returns (MyAddress b) {
-        b = MyAddress(a);
+        assembly { b := a }
     }
 }
 // ====

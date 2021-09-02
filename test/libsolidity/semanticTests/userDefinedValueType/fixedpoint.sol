@@ -1,21 +1,24 @@
 // Represent a 18 decimal, 256 bit wide fixed point type using a user defined value type.
 type UFixed256x18 is uint256;
 
+function wrap(uint x) pure returns (UFixed256x18 y) { assembly { y := x } }
+function unwrap(UFixed256x18 x) pure returns (uint y) { assembly { y := x } }
+
 /// A minimal library to do fixed point operations on UFixed256x18.
 library FixedMath {
     /// Adds two UFixed256x18 numbers. Reverts on overflow, relying on checked arithmetic on
     /// uint256.
     function add(UFixed256x18 a, UFixed256x18 b) internal returns (UFixed256x18) {
-        return UFixed256x18(uint256(a) + uint256(b));
+        return wrap(unwrap(a) + unwrap(b));
     }
     /// Multiplies UFixed256x18 and uint256. Reverts on overflow, relying on checked arithmetic on
     /// uint256.
     function mul(UFixed256x18 a, uint256 b) internal returns (UFixed256x18) {
-        return UFixed256x18(uint256(a) * b);
+        return wrap(unwrap(a) * b);
     }
     /// Truncates UFixed256x18 to the nearest uint256 number.
     function truncate(UFixed256x18 a) internal returns (uint256) {
-        return uint256(a) / 10**18;
+        return unwrap(a) / 10**18;
     }
 }
 

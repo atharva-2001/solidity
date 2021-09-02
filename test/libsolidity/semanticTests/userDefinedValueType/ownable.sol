@@ -4,10 +4,10 @@
 
 contract Ownable {
     type Owner is address;
-    Owner public owner = Owner(msg.sender);
+    Owner public owner = wrap(msg.sender);
     error OnlyOwner();
     modifier onlyOwner() {
-        if (address(owner) != msg.sender)
+        if (unwrap(owner) != msg.sender)
             revert OnlyOwner();
 
         _;
@@ -18,8 +18,11 @@ contract Ownable {
         owner = newOwner;
     }
     function renounceOwnership() onlyOwner external {
-        owner = Owner(address(0));
+        owner = wrap(address(0));
     }
+
+    function wrap(address x) internal pure returns (Owner y) { assembly { y := x } }
+    function unwrap(Owner x) internal pure returns (address y) { assembly { y := x } }
 }
 // ====
 // compileViaYul: also

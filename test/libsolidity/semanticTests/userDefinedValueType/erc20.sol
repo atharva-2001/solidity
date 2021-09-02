@@ -4,13 +4,16 @@
 // User defined type name. Indicating a type with 18 decimals.
 type UFixed18 is uint256;
 
+function wrap(uint x) pure returns (UFixed18 y) { assembly { y := x } }
+function unwrap(UFixed18 x) pure returns (uint y) { assembly { y := x } }
+
 library FixedMath
 {
     function add(UFixed18 a, UFixed18 b) internal pure returns (UFixed18 c) {
-        return UFixed18(uint(a) + uint(b));
+        return wrap(unwrap(a) + unwrap(b));
     }
     function sub(UFixed18 a, UFixed18 b) internal pure returns (UFixed18 c) {
-        return UFixed18(uint(a) - uint(b));
+        return wrap(unwrap(a) - unwrap(b));
     }
 }
 
@@ -25,7 +28,7 @@ contract ERC20 {
     UFixed18 private _totalSupply;
 
     constructor() {
-        _mint(msg.sender, UFixed18(uint(20)));
+        _mint(msg.sender, wrap(20));
     }
 
     function totalSupply() public view returns (UFixed18) {
@@ -115,7 +118,7 @@ contract ERC20 {
 // constructor()
 // ~ emit Transfer(address,address,uint256): #0x00, #0x1212121212121212121212121212120000000012, 0x14
 // gas irOptimized: 460447
-// gas legacy: 861547
+// gas legacy: 877809
 // gas legacyOptimized: 420959
 // totalSupply() -> 20
 // gas irOptimized: 23378
@@ -124,23 +127,23 @@ contract ERC20 {
 // transfer(address,uint256): 2, 5 -> true
 // ~ emit Transfer(address,address,uint256): #0x1212121212121212121212121212120000000012, #0x02, 0x05
 // gas irOptimized: 48514
-// gas legacy: 49572
+// gas legacy: 49830
 // gas legacyOptimized: 48575
 // decreaseAllowance(address,uint256): 2, 0 -> true
 // ~ emit Approval(address,address,uint256): #0x1212121212121212121212121212120000000012, #0x02, 0x00
 // gas irOptimized: 26316
-// gas legacy: 27204
+// gas legacy: 27333
 // gas legacyOptimized: 26317
 // decreaseAllowance(address,uint256): 2, 1 -> FAILURE, hex"4e487b71", 0x11
 // gas irOptimized: 24040
-// gas legacy: 24506
+// gas legacy: 24595
 // gas legacyOptimized: 24077
 // transfer(address,uint256): 2, 14 -> true
 // ~ emit Transfer(address,address,uint256): #0x1212121212121212121212121212120000000012, #0x02, 0x0e
 // gas irOptimized: 28614
-// gas legacy: 29672
+// gas legacy: 29930
 // gas legacyOptimized: 28675
 // transfer(address,uint256): 2, 2 -> FAILURE, hex"4e487b71", 0x11
 // gas irOptimized: 24052
-// gas legacy: 24492
+// gas legacy: 24581
 // gas legacyOptimized: 24074

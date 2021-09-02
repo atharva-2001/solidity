@@ -2,24 +2,31 @@ type MyUInt8 is uint8;
 type MyInt8 is int8;
 type MyUInt16 is uint16;
 
+function wrap8(uint8 x) pure returns (MyUInt8 y) { assembly { y := x } }
+function wrapi8(int8 x) pure returns (MyInt8 y) { assembly { y := x } }
+function wrap16(uint16 x) pure returns (MyUInt16 y) { assembly { y := x } }
+function unwrap8(MyUInt8 x) pure returns (uint8 y) { assembly { y := x } }
+function unwrapi8(MyInt8 x) pure returns (int8 y) { assembly { y := x } }
+function unwrap16(MyUInt16 x) pure returns (uint16 y) { assembly { y := x } }
+
 contract C {
     function f(uint a) external returns(MyUInt8) {
-        return MyUInt8(uint8(a));
+        return wrap8(uint8(a));
     }
     function g(uint a) external returns(MyInt8) {
-        return MyInt8(int8(int((a))));
+        return wrapi8(int8(int(a)));
     }
     function h(MyUInt8 a) external returns (MyInt8) {
-        return MyInt8(int8(uint8(a)));
+        return wrapi8(int8(unwrap8(a)));
     }
     function j(MyUInt8 a) external returns (uint) {
-        return uint(uint8(a));
+        return unwrap8(a);
     }
     function k(MyUInt8 a) external returns (MyUInt16) {
-        return MyUInt16(uint16(uint8(a)));
+        return wrap16(unwrap8(a));
     }
     function m(MyUInt16 a) external returns (MyUInt8) {
-        return MyUInt8(uint8(uint16(a)));
+        return wrap8(uint8(unwrap16(a)));
     }
 }
 
