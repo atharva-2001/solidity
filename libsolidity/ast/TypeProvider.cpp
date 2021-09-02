@@ -579,7 +579,7 @@ MappingType const* TypeProvider::mapping(Type const* _keyType, Type const* _valu
 	return createAndGet<MappingType>(_keyType, _valueType);
 }
 
-UserDefinedValueType const* TypeProvider::userDefinedValueType(Type const& _actualType, UserDefinedValueTypeDefinition const& _definition)
+UserDefinedValueType const* TypeProvider::userDefinedValueType(Type const& _underlyingType, UserDefinedValueTypeDefinition const& _definition)
 {
-	return createAndGet<UserDefinedValueType>(_actualType, _definition);
+	return createAndGet<UserDefinedValueType>(_underlyingType, _definition);
 }

@@ -395,7 +395,7 @@ ASTPointer<UserDefinedValueTypeDefinition> ASTJsonImporter::createUserDefinedVal
 		_node,
 		memberAsASTString(_node, "name"),
 		createNameSourceLocation(_node),
-		convertJsonToASTNode<TypeName>(member(_node, "typeName"))
+		convertJsonToASTNode<TypeName>(member(_node, "underlyingType"))
 	);
 }
 

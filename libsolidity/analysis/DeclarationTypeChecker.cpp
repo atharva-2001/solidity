@@ -142,7 +142,7 @@ bool DeclarationTypeChecker::visit(StructDefinition const& _struct)
 
 void DeclarationTypeChecker::endVisit(UserDefinedValueTypeDefinition const& _userDefined)
 {
-	TypeName const* typeName = _userDefined.typeName();
+	TypeName const* typeName = _userDefined.underlyingType();
 	solAssert(typeName, "");
 	if (!dynamic_cast<ElementaryTypeName const*>(typeName))
 		m_errorReporter.fatalTypeError(
@@ -184,7 +184,7 @@ void DeclarationTypeChecker::endVisit(UserDefinedTypeName const& _typeName)
 		_typeName.annotation().type = TypeProvider::contract(*contract);
 	else if (auto userDefinedValueType = dynamic_cast<UserDefinedValueTypeDefinition const*>(declaration))
 	{
-		TypeName const* typeName = userDefinedValueType->typeName();
+		TypeName const* typeName = userDefinedValueType->underlyingType();
 		solAssert(typeName, "");
 		Type const* underlyingType = typeName->annotation().type;
 		solAssert(underlyingType, "");

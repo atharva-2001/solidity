@@ -738,10 +738,10 @@ public:
 		SourceLocation const& _location,
 		ASTPointer<ASTString> _name,
 		SourceLocation _nameLocation,
-		ASTPointer<TypeName> _typeName
+		ASTPointer<TypeName> _underlyingType
 	):
 		Declaration(_id, _location, _name, std::move(_nameLocation), Visibility::Default),
-		m_typeName(std::move(_typeName))
+		m_underlyingType(std::move(_underlyingType))
 	{
 	}
 
@@ -750,11 +750,11 @@ public:
 
 	Type const* type() const override;
 
-	TypeName const* typeName() const { return m_typeName.get(); }
+	TypeName const* underlyingType() const { return m_underlyingType.get(); }
 
 private:
-	/// The name of the actual type
-	ASTPointer<TypeName> m_typeName;
+	/// The name of the underlying type
+	ASTPointer<TypeName> m_underlyingType;
 };
 
 /**

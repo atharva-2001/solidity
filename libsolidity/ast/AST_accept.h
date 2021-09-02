@@ -168,8 +168,8 @@ void UserDefinedValueTypeDefinition::accept(ASTConstVisitor& _visitor) const
 {
 	if (_visitor.visit(*this))
 	{
-		if (m_typeName)
-			m_typeName->accept(_visitor);
+		if (m_underlyingType)
+			m_underlyingType->accept(_visitor);
 	}
 	_visitor.endVisit(*this);
 }
@@ -178,8 +178,8 @@ void UserDefinedValueTypeDefinition::accept(ASTVisitor& _visitor)
 {
 	if (_visitor.visit(*this))
 	{
-		if (m_typeName)
-			m_typeName->accept(_visitor);
+		if (m_underlyingType)
+			m_underlyingType->accept(_visitor);
 	}
 	_visitor.endVisit(*this);
 }

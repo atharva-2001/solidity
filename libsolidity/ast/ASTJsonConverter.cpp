@@ -356,11 +356,11 @@ bool ASTJsonConverter::visit(EnumValue const& _node)
 
 bool ASTJsonConverter::visit(UserDefinedValueTypeDefinition const& _node)
 {
-	solAssert(_node.typeName(), "");
+	solAssert(_node.underlyingType(), "");
 	std::vector<pair<string, Json::Value>> attributes = {
 		make_pair("name", _node.name()),
 		make_pair("nameLocation", sourceLocationToString(_node.nameLocation())),
-		make_pair("typeName", toJson(*_node.typeName()))
+		make_pair("underlyingType", toJson(*_node.underlyingType()))
 	};
 
 	setJsonNode(_node, "UserDefinedValueTypeDefinition", std::move(attributes));

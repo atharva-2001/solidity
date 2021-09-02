@@ -337,8 +337,8 @@ TypeNameAnnotation& TypeName::annotation() const
 
 Type const* UserDefinedValueTypeDefinition::type() const
 {
-	solAssert(m_typeName->annotation().type, "");
-	return TypeProvider::typeType(TypeProvider::userDefinedValueType(*m_typeName->annotation().type, *this));
+	solAssert(m_underlyingType->annotation().type, "");
+	return TypeProvider::typeType(TypeProvider::userDefinedValueType(*m_underlyingType->annotation().type, *this));
 }
 
 Type const* StructDefinition::type() const
