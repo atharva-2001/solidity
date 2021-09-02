@@ -683,7 +683,6 @@ public:
 	TypeResult unaryOperatorResult(Token _operator) const override;
 	TypeResult binaryOperatorResult(Token _operator, Type const* _other) const override;
 
-	BoolResult isExplicitlyConvertibleTo(Type const& _convertTo) const override;
 	unsigned calldataEncodedSize(bool _padded) const override{ return _padded ? 32 : 1; }
 	unsigned storageBytes() const override { return 1; }
 	bool leftAligned() const override { return false; }
@@ -1128,9 +1127,6 @@ public:
 	std::string canonicalName() const override { solAssert(false, ""); }
 	std::string signatureInExternalFunction(bool) const override { solAssert(false, ""); }
 
-	BoolResult isExplicitlyConvertibleTo(Type const& _convertTo) const override;
-	///	Helper function to reason about UserDefinedValueType to ValueType explicit conversion
-	static bool convertTo(Type const& _userDefined, Type const& _valueType);
 protected:
 	std::vector<std::tuple<std::string, Type const*>> makeStackItems() const override;
 

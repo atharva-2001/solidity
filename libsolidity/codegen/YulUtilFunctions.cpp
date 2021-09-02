@@ -3170,14 +3170,12 @@ string YulUtilFunctions::conversionFunction(Type const& _from, Type const& _to)
 {
 	if (_from.category() == Type::Category::UserDefinedValueType)
 	{
-		solAssert(_from.isExplicitlyConvertibleTo(_to), "");
-		solAssert(_to.isValueType(), "");
+		solAssert(_from == _to || _to == dynamic_cast<UserDefinedValueType const&>(_from).underlyingType(), "");
 		return conversionFunction(dynamic_cast<UserDefinedValueType const&>(_from).underlyingType(), _to);
 	}
 	if (_to.category() == Type::Category::UserDefinedValueType)
 	{
-		solAssert(_from.isExplicitlyConvertibleTo(_to), "");
-		solAssert(_from.isValueType() || dynamic_cast<RationalNumberType const*>(&_from), "");
+		solAssert(_from == _to || _from == dynamic_cast<UserDefinedValueType const&>(_to).underlyingType(), "");
 		return conversionFunction(_from, dynamic_cast<UserDefinedValueType const&>(_to).underlyingType());
 	}
 	if (_from.category() == Type::Category::Function)

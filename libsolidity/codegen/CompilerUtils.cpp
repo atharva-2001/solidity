@@ -772,31 +772,19 @@ void CompilerUtils::convertType(
 	Type::Category stackTypeCategory = _typeOnStack.category();
 	Type::Category targetTypeCategory = _targetType.category();
 
-	if (stackTypeCategory == Type::Category::UserDefinedValueType)
+	if (
+		stackTypeCategory == Type::Category::UserDefinedValueType ||
+		targetTypeCategory == Type::Category::UserDefinedValueType
+	)
 	{
-		solAssert(_typeOnStack.isExplicitlyConvertibleTo(_targetType), "");
-		solAssert(_targetType.isValueType(), "");
-		return
-			convertType(
-				dynamic_cast<UserDefinedValueType const&>(_typeOnStack).underlyingType(),
-				_targetType,
-				_cleanupNeeded,
-				_chopSignBits,
-				_asPartOfArgumentDecoding
-			);
-	}
-	if (_targetType.category() == Type::Category::UserDefinedValueType)
-	{
-		solAssert(_typeOnStack.isExplicitlyConvertibleTo(_targetType), "");
-		solAssert(_typeOnStack.isValueType() || dynamic_cast<RationalNumberType const*>(&_typeOnStack), "");
-		return
-			convertType(
-				_typeOnStack,
-				dynamic_cast<UserDefinedValueType const&>(_targetType).underlyingType(),
-				_cleanupNeeded,
-				_chopSignBits,
-				_asPartOfArgumentDecoding
-			);
+		solAssert(_typeOnStack == _targetType && _cleanupNeeded, "");
+		return convertType(
+			dynamic_cast<UserDefinedValueType const&>(_typeOnStack).underlyingType(),
+			dynamic_cast<UserDefinedValueType const&>(_targetType).underlyingType(),
+			_cleanupNeeded,
+			_chopSignBits,
+			_asPartOfArgumentDecoding
+		);
 	}
 
 	if (auto contrType = dynamic_cast<ContractType const*>(&_typeOnStack))
