@@ -131,8 +131,9 @@ void Parser::fetchSourceLocationFromComment()
 		return;
 
 	static regex const lineRE = std::regex(
-		R"~~((?:^|\s*)@src\s+)~~"                     // tag: @src
-		R"~~((-1|\d+):(-1|\d+):(-1|\d+)(?:\s+|$))~~", // index and location, e.g.: 1:234:-1
+		R"~~((?:^|\s*)@src\s+)~~"                    // tag: @src
+		R"~~((-1|\d+):(-1|\d+):(-1|\d+)(?:\s+|$))~~" // index and location, e.g.: 1:234:-1
+		R"~~((?:"(?:[^"\\]|\\.)*"(?:\s+|$))?)~~",    // optional code snippet, e.g.: "string memory s = \"abc\";..."
 		std::regex_constants::ECMAScript | std::regex_constants::optimize
 	);
 

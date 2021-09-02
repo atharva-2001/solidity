@@ -571,6 +571,64 @@ BOOST_AUTO_TEST_CASE(customSourceLocations_reference_original_sloc)
 	CHECK_LOCATION(varDecl.debugData->location, "", 10, 20);
 }
 
+BOOST_AUTO_TEST_CASE(customSourceLocations_with_code_snippets)
+{
+	ErrorList errorList;
+	ErrorReporter reporter(errorList);
+	auto const sourceText = R"~~~(
+		{
+			/// @src 0:149:156  "new C(\"123\")"
+			let x := 123
+
+			let y := /** @src 1:96:165  "contract D {..." */ 128
+		}
+	)~~~";
+	EVMDialectTyped const& dialect = EVMDialectTyped::instance(EVMVersion{});
+	shared_ptr<Block> result = parse(sourceText, dialect, reporter);
+	BOOST_REQUIRE(!!result);
+	BOOST_REQUIRE_EQUAL(result->statements.size(), 2);
+
+	BOOST_REQUIRE(holds_alternative<VariableDeclaration>(result->statements.at(0)));
+	VariableDeclaration const& varX = get<VariableDeclaration>(result->statements.at(0));
+	CHECK_LOCATION(varX.debugData->location, "source0", 149, 156);
+
+	BOOST_REQUIRE(holds_alternative<VariableDeclaration>(result->statements.at(1)));
+	VariableDeclaration const& varY = get<VariableDeclaration>(result->statements.at(1));
+	BOOST_REQUIRE(!!varY.value);
+	BOOST_REQUIRE(holds_alternative<Literal>(*varY.value));
+	Literal const& literal128 = get<Literal>(*varY.value);
+	CHECK_LOCATION(literal128.debugData->location, "source1", 96, 165);
+}
+
+BOOST_AUTO_TEST_CASE(customSourceLocations_with_code_snippets_with_nested_locations)
+{
+	ErrorList errorList;
+	ErrorReporter reporter(errorList);
+	auto const sourceText = R"~~~(
+		{
+			/// @src 0:149:156  "new C(\"123\") /// @src 1:3:4 "
+			let x := 123
+
+			let y := /** @src 1:96:165  "function f() internal { \"\/** @src 0:6:7 *\/\"; }" */ 128
+		}
+	)~~~";
+	EVMDialectTyped const& dialect = EVMDialectTyped::instance(EVMVersion{});
+	shared_ptr<Block> result = parse(sourceText, dialect, reporter);
+	BOOST_REQUIRE(!!result);
+	BOOST_REQUIRE_EQUAL(result->statements.size(), 2);
+
+	BOOST_REQUIRE(holds_alternative<VariableDeclaration>(result->statements.at(0)));
+	VariableDeclaration const& varX = get<VariableDeclaration>(result->statements.at(0));
+	CHECK_LOCATION(varX.debugData->location, "source0", 149, 156);
+
+	BOOST_REQUIRE(holds_alternative<VariableDeclaration>(result->statements.at(1)));
+	VariableDeclaration const& varY = get<VariableDeclaration>(result->statements.at(1));
+	BOOST_REQUIRE(!!varY.value);
+	BOOST_REQUIRE(holds_alternative<Literal>(*varY.value));
+	Literal const& literal128 = get<Literal>(*varY.value);
+	CHECK_LOCATION(literal128.debugData->location, "source1", 96, 165);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 } // end namespaces
