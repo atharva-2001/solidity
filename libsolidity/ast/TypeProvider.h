@@ -201,7 +201,7 @@ public:
 
 	static MappingType const* mapping(Type const* _keyType, Type const* _valueType);
 
-	static UserDefinedValueType const* userDefinedValueType(Type const& _underlyingType, UserDefinedValueTypeDefinition const& _definition);
+	static UserDefinedValueType const* userDefinedValueType(UserDefinedValueTypeDefinition const& _definition);
 
 private:
 	/// Global TypeProvider instance.

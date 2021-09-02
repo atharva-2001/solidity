@@ -183,14 +183,7 @@ void DeclarationTypeChecker::endVisit(UserDefinedTypeName const& _typeName)
 	else if (ContractDefinition const* contract = dynamic_cast<ContractDefinition const*>(declaration))
 		_typeName.annotation().type = TypeProvider::contract(*contract);
 	else if (auto userDefinedValueType = dynamic_cast<UserDefinedValueTypeDefinition const*>(declaration))
-	{
-		TypeName const* typeName = userDefinedValueType->underlyingType();
-		solAssert(typeName, "");
-		Type const* underlyingType = typeName->annotation().type;
-		solAssert(underlyingType, "");
-
-		_typeName.annotation().type = TypeProvider::userDefinedValueType(*underlyingType, *userDefinedValueType);
-	}
+		_typeName.annotation().type = TypeProvider::userDefinedValueType(*userDefinedValueType);
 	else
 	{
 		_typeName.annotation().type = TypeProvider::emptyTuple();

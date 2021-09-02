@@ -1088,38 +1088,33 @@ private:
 class UserDefinedValueType: public Type
 {
 public:
-	explicit UserDefinedValueType(
-		Type const& _underlyingType,
-		UserDefinedValueTypeDefinition const& _userDefinedValueTypeDefinition
-	):
-		m_underlyingType(_underlyingType),
-		m_userDefinedValueTypeDefinition(_userDefinedValueTypeDefinition)
-	{
-	}
+	explicit UserDefinedValueType(UserDefinedValueTypeDefinition const& _definition):
+		m_definition(_definition)
+	{}
 
 	Category category() const override { return Category::UserDefinedValueType; }
-	Type const& underlyingType() const { return m_underlyingType; }
-	UserDefinedValueTypeDefinition const& definition() const { return m_userDefinedValueTypeDefinition; }
+	Type const& underlyingType() const;
+	UserDefinedValueTypeDefinition const& definition() const { return m_definition; }
 
 	TypeResult binaryOperatorResult(Token, Type const*) const override { return nullptr; }
-	Type const* encodingType() const override { return &m_underlyingType; }
-	TypeResult interfaceType(bool /* _inLibrary */) const override {return &m_underlyingType; }
+	Type const* encodingType() const override { return &underlyingType(); }
+	TypeResult interfaceType(bool /* _inLibrary */) const override {return &underlyingType(); }
 	std::string richIdentifier() const override;
 	bool operator==(Type const& _other) const override;
 
-	unsigned calldataEncodedSize(bool _padded) const override { return m_underlyingType.calldataEncodedSize(_padded); }
+	unsigned calldataEncodedSize(bool _padded) const override { return underlyingType().calldataEncodedSize(_padded); }
 
-	bool leftAligned() const override { return m_underlyingType.leftAligned(); }
-	bool canBeStored() const override { return m_underlyingType.canBeStored(); }
-	u256 storageSize() const override { return m_underlyingType.storageSize(); }
+	bool leftAligned() const override { return underlyingType().leftAligned(); }
+	bool canBeStored() const override { return underlyingType().canBeStored(); }
+	u256 storageSize() const override { return underlyingType().storageSize(); }
 	bool isValueType() const override
 	{
-		solAssert(m_underlyingType.isValueType(), "");
+		solAssert(underlyingType().isValueType(), "");
 		return true;
 	}
 	bool nameable() const override
 	{
-		solAssert(m_underlyingType.nameable(), "");
+		solAssert(underlyingType().nameable(), "");
 		return true;
 	}
 
@@ -1131,8 +1126,7 @@ protected:
 	std::vector<std::tuple<std::string, Type const*>> makeStackItems() const override;
 
 private:
-	Type const& m_underlyingType;
-	UserDefinedValueTypeDefinition const& m_userDefinedValueTypeDefinition;
+	UserDefinedValueTypeDefinition const& m_definition;
 };
 
 /**

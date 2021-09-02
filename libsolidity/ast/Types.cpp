@@ -2532,9 +2532,16 @@ unsigned EnumType::memberValue(ASTString const& _member) const
 	solAssert(false, "Requested unknown enum value " + _member);
 }
 
+Type const& UserDefinedValueType::underlyingType() const
+{
+	Type const* type = m_definition.underlyingType()->annotation().type;
+	solAssert(type, "");
+	return *type;
+}
+
 string UserDefinedValueType::richIdentifier() const
 {
-	return "t_userDefinedValueType" + parenthesizeIdentifier(m_userDefinedValueTypeDefinition.name()) + to_string(m_userDefinedValueTypeDefinition.id());
+	return "t_userDefinedValueType" + parenthesizeIdentifier(m_definition.name()) + to_string(m_definition.id());
 }
 
 bool UserDefinedValueType::operator==(Type const& _other) const
@@ -2545,14 +2552,14 @@ bool UserDefinedValueType::operator==(Type const& _other) const
 	return other.definition() == definition();
 }
 
-std::string UserDefinedValueType::toString(bool /* _short */) const
+string UserDefinedValueType::toString(bool /* _short */) const
 {
 	return "user defined type " + definition().name();
 }
 
-std::vector<std::tuple<std::string, Type const*>> UserDefinedValueType::makeStackItems() const
+vector<tuple<string, Type const*>> UserDefinedValueType::makeStackItems() const
 {
-	return m_underlyingType.stackItems();
+	return underlyingType().stackItems();
 }
 
 BoolResult TupleType::isImplicitlyConvertibleTo(Type const& _other) const
