@@ -140,7 +140,7 @@ bool DeclarationTypeChecker::visit(StructDefinition const& _struct)
 	return false;
 }
 
-bool DeclarationTypeChecker::visit(UserDefinedValueTypeDefinition const& _userDefined)
+void DeclarationTypeChecker::endVisit(UserDefinedValueTypeDefinition const& _userDefined)
 {
 	TypeName const* typeName = _userDefined.typeName();
 	solAssert(typeName, "");
@@ -151,13 +151,7 @@ bool DeclarationTypeChecker::visit(UserDefinedValueTypeDefinition const& _userDe
 			"The underlying type for a user defined value type has to be an elementary value type."
 		);
 
-	return true;
-}
-
-void DeclarationTypeChecker::endVisit(UserDefinedValueTypeDefinition const& _userDefined)
-{
-	solAssert(_userDefined.typeName(), "");
-	Type const* type = _userDefined.typeName()->annotation().type;
+	Type const* type = typeName->annotation().type;
 	solAssert(type, "");
 	solAssert(!dynamic_cast<UserDefinedValueType const*>(type), "");
 	if (!type->isValueType())
