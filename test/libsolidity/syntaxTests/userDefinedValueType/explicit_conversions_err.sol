@@ -9,5 +9,5 @@ function f() pure {
     a;
 }
 // ----
-// TypeError 9640: (85-95): Explicit type conversion not allowed from "int_const -1" to "user defined type MyUint". Cannot implicitly convert signed literal to unsigned type.
+// TypeError 9640: (85-95): Explicit type conversion not allowed from "int_const -1" to "user defined type MyUint".
 // TypeError 9640: (122-135): Explicit type conversion not allowed from "int_const -1" to "user defined type MyAddress".
