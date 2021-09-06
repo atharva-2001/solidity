@@ -77,7 +77,8 @@ public:
 
 	void markAsSeen(ErrorId _error, SourceLocation const& _location, std::string const& _description)
 	{
-		solAssert(!seen(_error, _location, _description), "");
+		if (_location != SourceLocation{})
+			solAssert(!seen(_error, _location, _description), "");
 		m_seenErrors[{_error, _location}] = _description;
 	}
 
