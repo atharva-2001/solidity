@@ -27,6 +27,7 @@
 #include <libyul/Dialect.h>
 
 #include <libsolutil/CommonData.h>
+#include <libsolutil/StringUtils.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -258,28 +259,40 @@ string AsmPrinter::appendTypeName(YulString _type, bool _isBoolLiteral) const
 
 string AsmPrinter::formatDebugData(shared_ptr<DebugData const> const& _debugData, bool _statement)
 {
-	if (
-		!_debugData ||
-		m_lastLocation == _debugData->location ||
-		m_nameToSourceIndex.empty()
-	)
+	if (!_debugData)
 		return "";
 
-	m_lastLocation = _debugData->location;
+	vector<string> items;
+	if (auto id = _debugData->astID)
+		items.emplace_back("@ast-id " + to_string(*id));
 
-	string sourceIndex = "-1";
-	if (_debugData->location.sourceName)
-		sourceIndex = to_string(m_nameToSourceIndex.at(*_debugData->location.sourceName));
+	if (
+		m_lastLocation != _debugData->location &&
+		!m_nameToSourceIndex.empty()
+	)
+	{
+		m_lastLocation = _debugData->location;
 
-	string sourceLocation =
-		"@src " +
-		sourceIndex +
-		":" +
-		to_string(_debugData->location.start) +
-		":" +
-		to_string(_debugData->location.end);
-	return
-		_statement ?
-		"/// " + sourceLocation + "\n" :
-		"/** " + sourceLocation + " */ ";
+		string sourceIndex = "-1";
+		if (_debugData->location.sourceName)
+			sourceIndex = to_string(m_nameToSourceIndex.at(*_debugData->location.sourceName));
+
+		items.emplace_back(
+			"@src " +
+			sourceIndex +
+			":" +
+			to_string(_debugData->location.start) +
+			":" +
+			to_string(_debugData->location.end)
+		);
+	}
+
+	string comment = joinHumanReadable(items, "\n");
+	if (comment.empty())
+		return "";
+	else
+		return
+			_statement ?
+			"/// " + comment + "\n" :
+			"/** " + comment + " */ ";
 }
